@@ -1,7 +1,15 @@
 {
   "name": "n8n-nodes-api-cmdeb",
   "displayName": "API CMDEB 2.0 - SEDUC - CE",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GUIKAR741/n8n-nodes-api-cmdeb.git"
+  },
+  "homepage": "https://github.com/GUIKAR741/n8n-nodes-api-cmdeb#readme",
+  "bugs": {
+    "url": "https://github.com/GUIKAR741/n8n-nodes-api-cmdeb/issues"
+  },
   "description": "Node n8n personalizado para integração e autenticação nativa com na API CMDEB 2.0 SEDUC - CE.",
   "license": "MIT",
   "type": "commonjs",
