@@ -20,7 +20,7 @@ export class ApiCmdeb2 implements ICredentialType {
             displayName: 'Ambiente',
             name: 'environment',
             type: 'options',
-            default: 'prod',
+            default: 'https://api-cmde2.gestaopresente.mec.gov.br',
             options: [
                 {
                     name: 'Produção',
