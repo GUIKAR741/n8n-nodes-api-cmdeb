@@ -27,8 +27,8 @@ n8n-nodes-api-cmdeb/
 ├── credentials/
 │   ├── ApiCmdeb2.credentials.ts        # Lida com a criação da sessão e tokens
 ├── nodes/
-│   └── Cmdeb2/
-│       ├── Cmdeb2.node.ts              # Definição central do Node N8N
+│   └── ApiCmdeb2/
+│       ├── ApiCmdeb2.node.ts              # Definição central do Node N8N
 │       ├── Services.ts                 # Direcionador de endpoints
 │       ├── properties/                 # Definição UI/Campos do node no N8N
 │       ├── services/                   # Intermediadores de regras e serviços

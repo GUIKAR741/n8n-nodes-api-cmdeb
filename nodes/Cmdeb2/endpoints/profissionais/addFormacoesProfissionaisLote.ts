@@ -1,4 +1,4 @@
-import { IExecuteFunctions } from 'n8n-workflow';
+import {IExecuteFunctions} from 'n8n-workflow';
 
 export async function addFormacoesProfissionaisLote(context: IExecuteFunctions, index: number): Promise<any> {
     try {
@@ -13,12 +13,15 @@ export async function addFormacoesProfissionaisLote(context: IExecuteFunctions, 
 
         return await context.helpers.httpRequestWithAuthentication.call(context, 'ApiCmdeb2', {
             url: '/api/v2/profissionais/formacoes/lote',
-            body: { profissionais },
+            body: {profissionais},
             method: 'POST',
         });
     } catch (error: any) {
         let mensagemErro = error.message || "Ocorreu um erro desconhecido";
-        try { if (error.response && error.response.data) mensagemErro = JSON.stringify(error.response.data); } catch {}
-        throw new Error(JSON.stringify({ nome: error.nome || 'erro_desconhecido', mensagem: mensagemErro }));
+        try {
+            if (error.response && error.response.data) mensagemErro = JSON.stringify(error.response.data);
+        } catch {
+        }
+        throw new Error(JSON.stringify({nome: error.nome || 'erro_desconhecido', mensagem: mensagemErro}));
     }
 }

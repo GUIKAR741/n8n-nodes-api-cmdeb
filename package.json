@@ -1,7 +1,7 @@
 {
   "name": "n8n-nodes-api-cmdeb",
   "displayName": "API CMDEB 2.0 - SEDUC - CE",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GUIKAR741/n8n-nodes-api-cmdeb.git"
@@ -21,7 +21,7 @@
       "dist/credentials/ApiCmdeb2.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/Cmdeb2/Cmdeb2.node.js"
+      "dist/nodes/ApiCmdeb2/ApiCmdeb2.node.js"
     ]
   },
   "files": [
@@ -30,9 +30,9 @@
   "scripts": {
     "build": "tsc && gulp build:icons",
     "dev": "tsc --watch",
-    "format": "prettier nodes credentials interfaces --write",
-    "lint": "eslint nodes credentials interfaces package.json",
-    "lint:fix": "eslint nodes credentials interfaces package.json --fix",
+    "format": "prettier nodes credentials --write",
+    "lint": "eslint nodes credentials package.json",
+    "lint:fix": "eslint nodes credentials package.json --fix",
     "clean": "rm -rf dist",
     "prepare": "npm run build"
   },

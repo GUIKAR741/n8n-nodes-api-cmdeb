@@ -1,4 +1,4 @@
-import { IExecuteFunctions } from 'n8n-workflow';
+import {IExecuteFunctions} from 'n8n-workflow';
 
 export async function listInstituicoesEnsino(
     context: IExecuteFunctions,
@@ -13,21 +13,32 @@ export async function listInstituicoesEnsino(
         const page = context.getNodeParameter('page', index, 1) as number;
         const page_size = context.getNodeParameter('page_size', index, 100) as number;
 
-        const qs: any = {
-            ...(id_sgp_entidade && { id_sgp_entidade }),
-            ...(co_entidade && { co_entidade }),
-            ...(no_entidade && { no_entidade }),
-            ...(co_uf && { co_uf }),
-            ...(page && { page }),
-            ...(page_size && { page_size }),
-        };
+        const params = new URLSearchParams();
+
+        if (id_sgp_entidade) {
+            params.append('id_sgp_entidade', String(id_sgp_entidade));
+        }
+        if (co_entidade) {
+            params.append('co_entidade', String(co_entidade));
+        }
+        if (no_entidade) {
+            params.append('no_entidade', String(no_entidade));
+        }
+        if (co_uf) {
+            params.append('co_uf', String(co_uf));
+        }
+        if (page) {
+            params.append('page', String(page));
+        }
+        if (page_size) {
+            params.append('page_size', String(page_size));
+        }
 
         return await context.helpers.httpRequestWithAuthentication.call(
             context,
             'ApiCmdeb2',
             {
-                url: '/api/v2/instituicoes-ensino',
-                qs,
+                url: `/api/v2/instituicoes-ensino${params.toString() ? '?' + params.toString() : ''}`,
                 method: 'GET',
             }
         );
@@ -38,7 +49,8 @@ export async function listInstituicoesEnsino(
             if (error.response && error.response.data) {
                 mensagemErro = JSON.stringify(error.response.data);
             }
-        } catch {}
+        } catch {
+        }
 
         throw new Error(JSON.stringify({
             nome: error.nome || error.code || 'erro_desconhecido',

@@ -1,4 +1,4 @@
-import { IExecuteFunctions } from 'n8n-workflow';
+import {IExecuteFunctions} from 'n8n-workflow';
 
 export async function createEstudantesComTurmaLote(
     context: IExecuteFunctions,

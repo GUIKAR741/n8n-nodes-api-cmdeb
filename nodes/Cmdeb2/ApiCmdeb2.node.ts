@@ -3,7 +3,7 @@ import {IExecuteFunctions, INodeExecutionData, INodeType, INodeTypeDescription, 
 import {propertiesConfig} from "./propertiesConfig";
 import {execute} from "./Services";
 
-export class Cmdeb2 implements INodeType {
+export class ApiCmdeb2 implements INodeType {
     description: INodeTypeDescription = {
         displayName: 'API CMDEB 2.0',
         name: 'ApiCmdeb2',

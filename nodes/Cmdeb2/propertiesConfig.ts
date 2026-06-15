@@ -114,8 +114,12 @@ export const propertiesConfig: INodeProperties[] = [
         options: [
             {name: 'Cadastro (Lote)', value: 'createFrequenciaMensalLote'},
             {name: 'Edição (Lote)', value: 'editFrequenciaMensalLote'},
-            {name: 'Listagem (com período)', value: 'listFrequenciaMensalPeriodo'},
-            {name: 'Listagem (sem período)', value: 'listFrequenciaMensal'},
+            {
+                name: 'Listagem (com período)',
+                value: 'listFrequenciaMensalPeriodo',
+                description: 'Obrigatório mês e ano'
+            },
+            {name: 'Listagem (sem período)', value: 'listFrequenciaMensal', description: 'Não obrigatório mês e ano'},
             {name: 'Listagem Faltantes', value: 'listFrequenciaMensalFaltantes'},
         ],
         default: 'listFrequenciaMensal',

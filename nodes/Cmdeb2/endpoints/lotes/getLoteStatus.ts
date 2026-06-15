@@ -1,4 +1,4 @@
-import { IExecuteFunctions } from 'n8n-workflow';
+import {IExecuteFunctions} from 'n8n-workflow';
 
 export async function getLoteStatus(
     context: IExecuteFunctions,
@@ -12,17 +12,21 @@ export async function getLoteStatus(
         const objetos_processados = context.getNodeParameter('objetos_processados', index, false) as boolean;
         const limit_objetos = context.getNodeParameter('limit_objetos', index, 100) as number;
 
-        const qs: any = {
-            ...(objetos_processados && { objetos_processados }),
-            ...(limit_objetos && { limit_objetos }),
-        };
+        const params = new URLSearchParams();
+
+        if (objetos_processados) {
+            params.append('objetos_processados', String(objetos_processados));
+        }
+        if (limit_objetos) {
+            params.append('limit_objetos', String(limit_objetos));
+        }
+
 
         return await context.helpers.httpRequestWithAuthentication.call(
             context,
             'ApiCmdeb2',
             {
-                url: `/api/v2/lotes/${lote_id}`,
-                qs,
+                url: `/api/v2/lotes/${lote_id}${params.toString() ? '?' + params.toString() : ''}`,
                 method: 'GET',
             }
         );
@@ -33,7 +37,8 @@ export async function getLoteStatus(
             if (error.response && error.response.data) {
                 mensagemErro = JSON.stringify(error.response.data);
             }
-        } catch {}
+        } catch {
+        }
 
         throw new Error(JSON.stringify({
             nome: error.nome || error.code || 'erro_desconhecido',

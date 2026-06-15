@@ -1,4 +1,4 @@
-import { IExecuteFunctions } from 'n8n-workflow';
+import {IExecuteFunctions} from 'n8n-workflow';
 
 export async function listSolicitacoesAlteracoes(
     context: IExecuteFunctions,
@@ -21,25 +21,44 @@ export async function listSolicitacoesAlteracoes(
         const page = context.getNodeParameter('page', index, 1) as number;
         const page_size = context.getNodeParameter('page_size', index, 100) as number;
 
-        const qs: any = {
-            ...(id_sgp_pessoa && { id_sgp_pessoa }),
-            ...(st_situacao_cpf !== '' && { st_situacao_cpf }),
-            ...(fl_no_pessoa_validado !== null && { fl_no_pessoa_validado }),
-            ...(fl_dt_nascimento_validado !== null && { fl_dt_nascimento_validado }),
-            ...(fl_no_mae_validado !== null && { fl_no_mae_validado }),
-            ...(co_tipo_situacao && { co_tipo_situacao }),
-            ...(dt_criacao_inicio && { dt_criacao_inicio }),
-            ...(dt_criacao_fim && { dt_criacao_fim }),
-            ...(page && { page }),
-            ...(page_size && { page_size }),
-        };
+        const params = new URLSearchParams();
+
+        if (id_sgp_pessoa) {
+            params.append('id_sgp_pessoa', String(id_sgp_pessoa));
+        }
+        if (st_situacao_cpf) {
+            params.append('st_situacao_cpf', String(st_situacao_cpf));
+        }
+        if (fl_no_pessoa_validado) {
+            params.append('fl_no_pessoa_validado', String(fl_no_pessoa_validado));
+        }
+        if (fl_dt_nascimento_validado) {
+            params.append('fl_dt_nascimento_validado', String(fl_dt_nascimento_validado));
+        }
+        if (fl_no_mae_validado) {
+            params.append('fl_no_mae_validado', String(fl_no_mae_validado));
+        }
+        if (co_tipo_situacao) {
+            params.append('co_tipo_situacao', String(co_tipo_situacao));
+        }
+        if (dt_criacao_inicio) {
+            params.append('dt_criacao_inicio', String(dt_criacao_inicio));
+        }
+        if (dt_criacao_fim) {
+            params.append('dt_criacao_fim', String(dt_criacao_fim));
+        }
+        if (page) {
+            params.append('page', String(page));
+        }
+        if (page_size) {
+            params.append('page_size', String(page_size));
+        }
 
         return await context.helpers.httpRequestWithAuthentication.call(
             context,
             'ApiCmdeb2',
             {
-                url: '/api/v2/pessoas/solicitacoes-alteracoes', // Ajuste a rota exata se necessário conforme a OpenAPI
-                qs,
+                url: `/api/v2/pessoas/solicitacoes-alteracoes${params.toString() ? '?' + params.toString() : ''}`,
                 method: 'GET',
             }
         );
@@ -50,7 +69,8 @@ export async function listSolicitacoesAlteracoes(
             if (error.response && error.response.data) {
                 mensagemErro = JSON.stringify(error.response.data);
             }
-        } catch {}
+        } catch {
+        }
 
         throw new Error(JSON.stringify({
             nome: error.nome || error.code || 'erro_desconhecido',

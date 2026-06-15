@@ -1,4 +1,4 @@
-import { IExecuteFunctions } from 'n8n-workflow';
+import {IExecuteFunctions} from 'n8n-workflow';
 
 export async function listFrequenciaMensal(
     context: IExecuteFunctions,
@@ -15,23 +15,44 @@ export async function listFrequenciaMensal(
         const page = context.getNodeParameter('page', index, 1) as number;
         const page_size = context.getNodeParameter('page_size', index, 100) as number;
 
-        const qs: any = {
-            ...(id_sgp_entidade && { id_sgp_entidade }),
-            ...(id_sgp_matricula && { id_sgp_matricula }),
-            ...(co_entidade && { co_entidade }),
-            ...(estudante_cpf && { estudante_cpf }),
-            ...(ano_referencia && { ano_referencia }),
-            ...(mes_referencia && { mes_referencia }),
-            ...(page && { page }),
-            ...(page_size && { page_size }),
-        };
+        if ((mes_referencia && !ano_referencia) || (!mes_referencia && ano_referencia)) {
+            throw new Error('Se campo mês preenchido então ano deve ser preenchido, se ano preenchido então mês deve ser preenchido.');
+        }
+
+
+        const params = new URLSearchParams();
+
+        if (id_sgp_entidade) {
+            params.append('id_sgp_entidade', String(id_sgp_entidade));
+        }
+        if (id_sgp_matricula) {
+            params.append('id_sgp_matricula', String(id_sgp_matricula));
+        }
+        if (co_entidade) {
+            params.append('co_entidade', String(co_entidade));
+        }
+        if (estudante_cpf) {
+            params.append('estudante_cpf', String(estudante_cpf));
+        }
+        if (ano_referencia) {
+            params.append('ano_referencia', String(ano_referencia));
+        }
+        if (mes_referencia) {
+            params.append('mes_referencia', String(mes_referencia));
+        }
+        if (page) {
+            params.append('page', String(page));
+        }
+        if (page_size) {
+            params.append('page_size', String(page_size));
+        }
+
 
         return await context.helpers.httpRequestWithAuthentication.call(
             context,
             'ApiCmdeb2',
             {
-                url: '/api/v2/frequencia-mensal-matricula',
-                qs,
+                url: `/api/v2/frequencia-mensal-matricula${params.toString() ? '?' + params.toString() : ''}`,
                 method: 'GET',
             }
         );
@@ -41,7 +62,8 @@ export async function listFrequenciaMensal(
             if (error.response && error.response.data) {
                 mensagemErro = JSON.stringify(error.response.data);
             }
-        } catch {}
+        } catch {
+        }
 
         throw new Error(JSON.stringify({
             nome: error.nome || error.code || 'erro_desconhecido',

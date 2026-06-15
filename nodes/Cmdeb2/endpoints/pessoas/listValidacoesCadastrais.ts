@@ -1,4 +1,4 @@
-import { IExecuteFunctions } from 'n8n-workflow';
+import {IExecuteFunctions} from 'n8n-workflow';
 
 export async function listValidacoesCadastrais(
     context: IExecuteFunctions,
@@ -21,25 +21,43 @@ export async function listValidacoesCadastrais(
         const page = context.getNodeParameter('page', index, 1) as number;
         const page_size = context.getNodeParameter('page_size', index, 100) as number;
 
-        const qs: any = {
-            ...(id_sgp_pessoa && { id_sgp_pessoa }),
-            ...(st_situacao_cpf !== '' && { st_situacao_cpf }),
-            ...(fl_no_pessoa_validado !== null && { fl_no_pessoa_validado }),
-            ...(fl_dt_nascimento_validado !== null && { fl_dt_nascimento_validado }),
-            ...(fl_no_mae_validado !== null && { fl_no_mae_validado }),
-            ...(st_cadastro_validado !== '' && { st_cadastro_validado }),
-            ...(dt_validacao_inicio && { dt_validacao_inicio }),
-            ...(dt_validacao_fim && { dt_validacao_fim }),
-            ...(page && { page }),
-            ...(page_size && { page_size }),
-        };
+        const params = new URLSearchParams();
 
+        if (id_sgp_pessoa) {
+            params.append('id_sgp_pessoa', String(id_sgp_pessoa));
+        }
+        if (st_situacao_cpf) {
+            params.append('st_situacao_cpf', String(st_situacao_cpf));
+        }
+        if (fl_no_pessoa_validado) {
+            params.append('fl_no_pessoa_validado', String(fl_no_pessoa_validado));
+        }
+        if (fl_dt_nascimento_validado) {
+            params.append('fl_dt_nascimento_validado', String(fl_dt_nascimento_validado));
+        }
+        if (fl_no_mae_validado) {
+            params.append('fl_no_mae_validado', String(fl_no_mae_validado));
+        }
+        if (st_cadastro_validado) {
+            params.append('st_cadastro_validado', String(st_cadastro_validado));
+        }
+        if (dt_validacao_inicio) {
+            params.append('dt_validacao_inicio', String(dt_validacao_inicio));
+        }
+        if (dt_validacao_fim) {
+            params.append('dt_validacao_fim', String(dt_validacao_fim));
+        }
+        if (page) {
+            params.append('page', String(page));
+        }
+        if (page_size) {
+            params.append('page_size', String(page_size));
+        }
         return await context.helpers.httpRequestWithAuthentication.call(
             context,
             'ApiCmdeb2',
             {
-                url: '/api/v2/pessoas/validacoes-cadastrais', // Ajuste a rota exata se necessário conforme a OpenAPI
-                qs,
+                url: `/api/v2/pessoas/validacoes-cadastrais${params.toString() ? '?' + params.toString() : ''}`,
                 method: 'GET',
             }
         );
@@ -50,7 +68,8 @@ export async function listValidacoesCadastrais(
             if (error.response && error.response.data) {
                 mensagemErro = JSON.stringify(error.response.data);
             }
-        } catch {}
+        } catch {
+        }
 
         throw new Error(JSON.stringify({
             nome: error.nome || error.code || 'erro_desconhecido',

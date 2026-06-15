@@ -1,4 +1,4 @@
-import { IExecuteFunctions } from 'n8n-workflow';
+import {IExecuteFunctions} from 'n8n-workflow';
 
 export async function listAvaliacaoDesempenho(
     context: IExecuteFunctions,
@@ -16,24 +16,38 @@ export async function listAvaliacaoDesempenho(
         const page = context.getNodeParameter('page', index, 1) as number;
         const page_size = context.getNodeParameter('page_size', index, 100) as number;
 
-        // Montagem condicional do objeto de query string (evita enviar parâmetros vazios ou nulos)
-        const qs: any = {
-            ...(id_sgp_matricula && { id_sgp_matricula }),
-            ...(id_sgp_componente_curricular && { id_sgp_componente_curricular }),
-            ...(id_sgp_turma && { id_sgp_turma }),
-            ...(co_area_conhecimento && { co_area_conhecimento }),
-            ...(nu_ano_matricula && { nu_ano_matricula }),
-            ...(co_etapa_ensino && { co_etapa_ensino }),
-            ...(page && { page }),
-            ...(page_size && { page_size }),
-        };
+        const params = new URLSearchParams();
+
+        if (id_sgp_matricula) {
+            params.append('id_sgp_matricula', String(id_sgp_matricula));
+        }
+        if (id_sgp_componente_curricular) {
+            params.append('id_sgp_componente_curricular', String(id_sgp_componente_curricular));
+        }
+        if (id_sgp_turma) {
+            params.append('id_sgp_turma', String(id_sgp_turma));
+        }
+        if (co_area_conhecimento) {
+            params.append('co_area_conhecimento', String(co_area_conhecimento));
+        }
+        if (nu_ano_matricula) {
+            params.append('nu_ano_matricula', String(nu_ano_matricula));
+        }
+        if (co_etapa_ensino) {
+            params.append('co_etapa_ensino', String(co_etapa_ensino));
+        }
+        if (page) {
+            params.append('page', String(page));
+        }
+        if (page_size) {
+            params.append('page_size', String(page_size));
+        }
 
         return await context.helpers.httpRequestWithAuthentication.call(
             context,
             'ApiCmdeb2',
             {
-                url: '/api/v2/avaliacao-desempenho',
-                qs,
+                url: `/api/v2/avaliacao-desempenho${params.toString() ? '?' + params.toString() : ''}`,
                 method: 'GET',
             }
         );

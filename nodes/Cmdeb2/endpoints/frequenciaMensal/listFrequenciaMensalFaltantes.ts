@@ -1,4 +1,4 @@
-import { IExecuteFunctions } from 'n8n-workflow';
+import {IExecuteFunctions} from 'n8n-workflow';
 
 export async function listFrequenciaMensalFaltantes(
     context: IExecuteFunctions,
@@ -16,21 +16,32 @@ export async function listFrequenciaMensalFaltantes(
         const page = context.getNodeParameter('page', index, 1) as number;
         const page_size = context.getNodeParameter('page_size', index, 100) as number;
 
-        const qs: any = {
-            ...(pdm && { pdm }),
-            ...(id_sgp_entidade && { id_sgp_entidade }),
-            ...(co_entidade && { co_entidade }),
-            ...(estudante_cpf && { estudante_cpf }),
-            ...(page && { page }),
-            ...(page_size && { page_size }),
-        };
+        const params = new URLSearchParams();
+
+        if (pdm) {
+            params.append('pdm', String(pdm));
+        }
+        if (id_sgp_entidade) {
+            params.append('id_sgp_entidade', String(id_sgp_entidade));
+        }
+        if (co_entidade) {
+            params.append('co_entidade', String(co_entidade));
+        }
+        if (estudante_cpf) {
+            params.append('estudante_cpf', String(estudante_cpf));
+        }
+        if (page) {
+            params.append('page', String(page));
+        }
+        if (page_size) {
+            params.append('page_size', String(page_size));
+        }
 
         return await context.helpers.httpRequestWithAuthentication.call(
             context,
             'ApiCmdeb2',
             {
-                url: `/api/v2/frequencia-mensal-matricula/${ano_referencia}/${mes_referencia}/faltantes`,
-                qs,
+                url: `/api/v2/frequencia-mensal-matricula/${ano_referencia}/${mes_referencia}/faltantes${params.toString() ? '?' + params.toString() : ''}`,
                 method: 'GET',
             }
         );
@@ -40,7 +51,8 @@ export async function listFrequenciaMensalFaltantes(
             if (error.response && error.response.data) {
                 mensagemErro = JSON.stringify(error.response.data);
             }
-        } catch {}
+        } catch {
+        }
 
         throw new Error(JSON.stringify({
             nome: error.nome || error.code || 'erro_desconhecido',

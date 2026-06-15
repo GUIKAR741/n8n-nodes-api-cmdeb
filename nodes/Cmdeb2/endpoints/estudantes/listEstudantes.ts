@@ -1,4 +1,4 @@
-import { IExecuteFunctions } from 'n8n-workflow';
+import {IExecuteFunctions} from 'n8n-workflow';
 
 export async function listEstudantes(
     context: IExecuteFunctions,
@@ -31,29 +31,51 @@ export async function listEstudantes(
             ? etapasStr.split(',').map(s => s.trim()).filter(Boolean).map(Number)
             : [];
 
-        // Montagem da query string dinamicamente. Ignora os campos vazios ou nulos.
-        const qs: any = {
-            ...(id_sgp_instituicao && { id_sgp_instituicao }),
-            ...(id_sgp_turma && { id_sgp_turma }),
-            ...(estudante_cpf && { estudante_cpf }),
-            ...(co_entidade && { co_entidade }),
-            ...(ano_matricula && { ano_matricula }),
-            ...(id_sgp_matricula && { id_sgp_matricula }),
-            ...(situacoes_matricula.length > 0 && { situacoes_matricula }),
-            ...(etapas_ensino.length > 0 && { etapas_ensino }),
-            ...(outras_matriculas && { outras_matriculas }),
-            ...(include_endereco && { include_endereco }),
-            ...(page && { page }),
-            ...(page_size && { page_size }),
-        };
+        const params = new URLSearchParams();
+
+        if (id_sgp_instituicao) {
+            params.append('id_sgp_instituicao', String(id_sgp_instituicao));
+        }
+        if (id_sgp_turma) {
+            params.append('id_sgp_turma', String(id_sgp_turma));
+        }
+        if (estudante_cpf) {
+            params.append('estudante_cpf', String(estudante_cpf));
+        }
+        if (co_entidade) {
+            params.append('co_entidade', String(co_entidade));
+        }
+        if (ano_matricula) {
+            params.append('ano_matricula', String(ano_matricula));
+        }
+        if (id_sgp_matricula) {
+            params.append('id_sgp_matricula', String(id_sgp_matricula));
+        }
+        situacoes_matricula.forEach((situacao_matricula) => {
+            params.append('situacoes_matricula', String(situacao_matricula));
+        });
+        etapas_ensino.forEach((etapa_ensino) => {
+            params.append('etapas_ensino', String(etapa_ensino));
+        });
+        if (outras_matriculas) {
+            params.append('outras_matriculas', String(outras_matriculas));
+        }
+        if (include_endereco) {
+            params.append('include_endereco', String(include_endereco));
+        }
+        if (page) {
+            params.append('page', String(page));
+        }
+        if (page_size) {
+            params.append('page_size', String(page_size));
+        }
 
         // Realiza a requisição e retorna o conteúdo
         return await context.helpers.httpRequestWithAuthentication.call(
             context,
             'ApiCmdeb2', // Nome da credencial registrada
             {
-                url: '/api/v2/estudantes',
-                qs,
+                url: `/api/v2/estudantes${params.toString() ? '?' + params.toString() : ''}`,
                 method: 'GET',
             }
         );

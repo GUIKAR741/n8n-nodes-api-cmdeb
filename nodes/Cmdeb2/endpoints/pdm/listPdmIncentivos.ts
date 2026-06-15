@@ -1,4 +1,4 @@
-import { IExecuteFunctions } from 'n8n-workflow';
+import {IExecuteFunctions} from 'n8n-workflow';
 
 export async function listPdmIncentivos(
     context: IExecuteFunctions,
@@ -12,20 +12,29 @@ export async function listPdmIncentivos(
         const page = context.getNodeParameter('page', index, 1) as number;
         const page_size = context.getNodeParameter('page_size', index, 100) as number;
 
-        const qs: any = {
-            ...(cpf_nis && { cpf_nis }),
-            ...(co_entidade && { co_entidade }),
-            ...(ciclo && { ciclo }),
-            ...(page && { page }),
-            ...(page_size && { page_size }),
-        };
+        const params = new URLSearchParams();
+
+        if (cpf_nis) {
+            params.append('cpf_nis', String(cpf_nis));
+        }
+        if (co_entidade) {
+            params.append('co_entidade', String(co_entidade));
+        }
+        if (ciclo) {
+            params.append('ciclo', String(ciclo));
+        }
+        if (page) {
+            params.append('page', String(page));
+        }
+        if (page_size) {
+            params.append('page_size', String(page_size));
+        }
 
         return await context.helpers.httpRequestWithAuthentication.call(
             context,
             'ApiCmdeb2',
             {
-                url: '/api/v2/pdm/incentivos',
-                qs,
+                url: `/api/v2/pdm/incentivos${params.toString() ? '?' + params.toString() : ''}`,
                 method: 'GET',
             }
         );
@@ -36,7 +45,8 @@ export async function listPdmIncentivos(
             if (error.response && error.response.data) {
                 mensagemErro = JSON.stringify(error.response.data);
             }
-        } catch {}
+        } catch {
+        }
 
         throw new Error(JSON.stringify({
             nome: error.nome || error.code || 'erro_desconhecido',
