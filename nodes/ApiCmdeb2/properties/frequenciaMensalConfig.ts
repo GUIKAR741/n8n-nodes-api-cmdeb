@@ -219,4 +219,15 @@ export const frequenciaMensalConfig: INodeProperties[] = [
             }
         },
     },
+
+    // ─── createFrequenciaMatriculasInativasLote ───────────────────────────────
+    {
+        displayName: 'Frequências (JSON)',
+        name: 'frequencias_matriculas_inativas_json',
+        type: 'json',
+        default: '[]',
+        required: true,
+        description: 'Array de frequências de matrículas inativas a cadastrar. Consulte a documentação para os campos obrigatórios',
+        displayOptions: {show: {endpoints: ['createFrequenciaMatriculasInativasLote']}},
+    },
 ];

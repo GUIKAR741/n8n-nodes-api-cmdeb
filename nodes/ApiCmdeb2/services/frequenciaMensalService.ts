@@ -4,6 +4,9 @@ import {editFrequenciaMensalLote} from '../endpoints/frequenciaMensal/editFreque
 import {listFrequenciaMensalPeriodo} from '../endpoints/frequenciaMensal/listFrequenciaMensalPeriodo';
 import {listFrequenciaMensal} from '../endpoints/frequenciaMensal/listFrequenciaMensal';
 import {listFrequenciaMensalFaltantes} from '../endpoints/frequenciaMensal/listFrequenciaMensalFaltantes';
+import {
+    createFrequenciaMatriculasInativasLote
+} from "../endpoints/frequenciaMensal/createFrequenciaMatriculasInativasLote";
 
 export async function frequenciaMensalService(
     this: IExecuteFunctions,
@@ -14,6 +17,9 @@ export async function frequenciaMensalService(
     switch (endpoint) {
         case 'createFrequenciaMensalLote':
             requestOptions = await createFrequenciaMensalLote(this, i);
+            break;
+        case 'createFrequenciaMatriculasInativasLote':
+            requestOptions = await createFrequenciaMatriculasInativasLote(this, i);
             break;
         case 'editFrequenciaMensalLote':
             requestOptions = await editFrequenciaMensalLote(this, i);

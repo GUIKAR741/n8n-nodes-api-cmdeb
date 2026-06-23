@@ -1,4 +1,4 @@
-import {IExecuteFunctions} from 'n8n-workflow';
+import {IExecuteFunctions, NodeOperationError} from 'n8n-workflow';
 
 export async function listFrequenciaMensalPeriodo(
     context: IExecuteFunctions,
@@ -51,17 +51,12 @@ export async function listFrequenciaMensalPeriodo(
             }
         );
     } catch (error: any) {
-        let mensagemErro = error.message || error.mensagem || error.detail || "Ocorreu um erro desconhecido";
-        try {
-            if (error.response && error.response.data) {
-                mensagemErro = JSON.stringify(error.response.data);
-            }
-        } catch {
-        }
-
-        throw new Error(JSON.stringify({
-            nome: error.nome || error.code || 'erro_desconhecido',
-            mensagem: mensagemErro
-        }));
+        throw new NodeOperationError(
+            context.getNode(),
+            `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}`,
+            {
+                description: JSON.stringify(error, null, 4),
+            },
+        );
     }
 }

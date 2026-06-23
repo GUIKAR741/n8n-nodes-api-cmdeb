@@ -6,6 +6,9 @@ import {editProfissionaisLote} from '../endpoints/profissionais/editProfissionai
 import {editFormacoesProfissionaisLote} from '../endpoints/profissionais/editFormacoesProfissionaisLote';
 import {editFuncoesProfissionaisLote} from '../endpoints/profissionais/editFuncoesProfissionaisLote';
 import {listProfissionais} from '../endpoints/profissionais/listProfissionais';
+import {listProfissionaisEnturmacao} from "../endpoints/profissionais/listProfissionaisEnturmacao";
+import {createProfissionaisEnturmacaoLote} from "../endpoints/profissionais/createProfissionaisEnturmacaoLote";
+import {editProfissionaisEnturmacaoLote} from "../endpoints/profissionais/editProfissionaisEnturmacaoLote";
 
 export async function profissionaisService(
     this: IExecuteFunctions,
@@ -34,6 +37,15 @@ export async function profissionaisService(
             break;
         case 'listProfissionais':
             requestOptions = await listProfissionais(this, i);
+            break;
+        case 'listProfissionaisEnturmacao':
+            requestOptions = await listProfissionaisEnturmacao(this, i);
+            break;
+        case 'createProfissionaisEnturmacaoLote':
+            requestOptions = await createProfissionaisEnturmacaoLote(this, i);
+            break;
+        case 'editProfissionaisEnturmacaoLote':
+            requestOptions = await editProfissionaisEnturmacaoLote(this, i);
             break;
         default:
             throw new Error(`Endpoint de profissionais não implementado: ${endpoint}`);

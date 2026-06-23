@@ -1,8 +1,8 @@
 import {IExecuteFunctions, NodeOperationError} from 'n8n-workflow';
 
-export async function editFuncoesProfissionaisLote(context: IExecuteFunctions, index: number): Promise<any> {
+export async function createProfissionaisEnturmacaoLote(context: IExecuteFunctions, index: number): Promise<any> {
     try {
-        const profissionaisJson = context.getNodeParameter('profissionais_funcoes_edicao_json', index);
+        const profissionaisJson = context.getNodeParameter('profissionais_enturmacao_cadastro_json', index);
         let profissionais: any[];
 
         try {
@@ -12,9 +12,9 @@ export async function editFuncoesProfissionaisLote(context: IExecuteFunctions, i
         }
 
         return await context.helpers.httpRequestWithAuthentication.call(context, 'ApiCmdeb2', {
-            url: '/api/v2/profissionais/funcoes/lote',
+            url: '/api/v2/profissionais/enturmacao/lote',
             body: {profissionais},
-            method: 'PUT',
+            method: 'POST',
         });
     } catch (error: any) {
         throw new NodeOperationError(

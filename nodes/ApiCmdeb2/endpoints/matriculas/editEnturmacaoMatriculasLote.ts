@@ -1,31 +1,31 @@
 import {IExecuteFunctions, NodeOperationError} from 'n8n-workflow';
 
-export async function createTurmasLote(
+export async function editEnturmacaoMatriculasLote(
     context: IExecuteFunctions,
     index: number,
 ): Promise<any> {
     try {
-        const turmasJson = context.getNodeParameter('turmas_cadastro_json', index);
+        const matriculasJson = context.getNodeParameter('matriculas_edicao_enturmacao_json', index);
 
-        let turmas: any[];
+        let matriculas: any[];
 
         try {
-            turmas = typeof turmasJson === 'string' ? JSON.parse(turmasJson) : turmasJson;
+            matriculas = typeof matriculasJson === 'string' ? JSON.parse(matriculasJson) : matriculasJson;
         } catch (e) {
-            throw new Error('O campo de turmas para cadastro deve conter um array JSON válido.');
+            throw new Error('O campo de matrículas para edição deve conter um array JSON válido.');
         }
 
         const body = {
-            turmas,
+            matriculas,
         };
 
         return await context.helpers.httpRequestWithAuthentication.call(
             context,
             'ApiCmdeb2',
             {
-                url: '/api/v2/turmas/lote',
+                url: '/api/v2/matriculas/enturmacao/edicao/lote',
                 body,
-                method: 'POST',
+                method: 'PUT',
             }
         );
 

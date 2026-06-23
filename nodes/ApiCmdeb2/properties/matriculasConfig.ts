@@ -61,4 +61,15 @@ export const matriculasConfig: INodeProperties[] = [
             }
         },
     },
+
+    // ─── editEnturmacaoMatriculasLote ─────────────────────────────────────────
+    {
+        displayName: 'Matrículas (JSON)',
+        name: 'matriculas_edicao_enturmacao_json',
+        type: 'json',
+        default: '[]',
+        required: true,
+        description: 'Array de enturmações a editar. Consulte a documentação para os campos obrigatórios',
+        displayOptions: {show: {endpoints: ['editEnturmacaoMatriculasLote']}},
+    },
 ];

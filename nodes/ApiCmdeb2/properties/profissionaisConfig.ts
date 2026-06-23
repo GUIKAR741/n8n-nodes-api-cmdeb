@@ -94,6 +94,15 @@ export const profissionaisConfig: INodeProperties[] = [
             }
         },
     },
+    {
+        displayName: 'Incluir Endereço',
+        name: 'include_endereco',
+        type: 'boolean',
+        default: false,
+        required: false,
+        description: 'Whether inclui dados de endereço do profissional',
+        displayOptions: {show: {endpoints: ['listProfissionais']}},
+    },
 
     // ─── Paginação (listProfissionais) ────────────────────────────────────────
     {
@@ -203,5 +212,85 @@ export const profissionaisConfig: INodeProperties[] = [
                 endpoints: ['editFormacoesProfissionaisLote']
             }
         },
+    },
+
+    // ─── listProfissionaisEnturmacao ──────────────────────────────────────────
+    {
+        displayName: 'ID SGP da Turma',
+        name: 'id_sgp_turma',
+        type: 'number',
+        default: '',
+        required: false,
+        description: 'ID SGP da turma para filtrar as alocações',
+        displayOptions: {show: {endpoints: ['listProfissionaisEnturmacao']}},
+    },
+    {
+        displayName: 'ID SGP do Componente Curricular',
+        name: 'id_sgp_componente_curricular',
+        type: 'number',
+        default: '',
+        required: false,
+        description: 'ID SGP do componente curricular para filtrar as alocações',
+        displayOptions: {show: {endpoints: ['listProfissionaisEnturmacao']}},
+    },
+    {
+        displayName: 'ID SGP da Função',
+        name: 'id_sgp_funcao',
+        type: 'number',
+        default: '',
+        required: false,
+        description: 'ID SGP do vínculo/função do profissional',
+        displayOptions: {show: {endpoints: ['listProfissionaisEnturmacao']}},
+    },
+    {
+        displayName: 'Código INEP da Instituição',
+        name: 'co_entidade',
+        type: 'string',
+        default: '',
+        required: false,
+        description: 'Código INEP da instituição de ensino',
+        displayOptions: {show: {endpoints: ['listProfissionaisEnturmacao']}},
+    },
+    {
+        displayName: 'Página',
+        name: 'page',
+        type: 'number',
+        default: 1,
+        required: false,
+        description: 'Número da página',
+        typeOptions: {minValue: 1},
+        displayOptions: {show: {endpoints: ['listProfissionaisEnturmacao']}},
+    },
+    {
+        displayName: 'Itens por Página',
+        name: 'page_size',
+        type: 'number',
+        default: 100,
+        required: false,
+        description: 'Itens por página (padrão: 100, máximo: 5000)',
+        typeOptions: {minValue: 1, maxValue: 5000},
+        displayOptions: {show: {endpoints: ['listProfissionaisEnturmacao']}},
+    },
+
+    // ─── createProfissionaisEnturmacaoLote ────────────────────────────────────
+    {
+        displayName: 'Alocações (JSON)',
+        name: 'profissionais_enturmacao_cadastro_json',
+        type: 'json',
+        default: '[]',
+        required: true,
+        description: 'Array de vínculos de profissionais a turmas/componentes curriculares a cadastrar',
+        displayOptions: {show: {endpoints: ['createProfissionaisEnturmacaoLote']}},
+    },
+
+    // ─── editProfissionaisEnturmacaoLote ──────────────────────────────────────
+    {
+        displayName: 'Alocações (JSON)',
+        name: 'profissionais_enturmacao_edicao_json',
+        type: 'json',
+        default: '[]',
+        required: true,
+        description: 'Array de vínculos de profissionais a turmas/componentes curriculares a editar',
+        displayOptions: {show: {endpoints: ['editProfissionaisEnturmacaoLote']}},
     },
 ];

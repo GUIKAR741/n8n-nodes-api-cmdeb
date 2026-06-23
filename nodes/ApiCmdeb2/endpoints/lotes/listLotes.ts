@@ -1,23 +1,17 @@
-import {IExecuteFunctions} from 'n8n-workflow';
+import {IExecuteFunctions, NodeOperationError} from 'n8n-workflow';
 
 export async function listLotes(
     context: IExecuteFunctions,
     index: number,
 ): Promise<any> {
     try {
-        const tiposStr = context.getNodeParameter('tipos', index, '') as string;
-
-        // Transforma a string separada por vírgulas num array de números
-        const tipos = tiposStr
-            ? tiposStr.split(',').map(s => parseInt(s.trim(), 10)).filter(n => !isNaN(n))
-            : [];
-
+        const tiposNumber = context.getNodeParameter('tipos', index, []) as number[];
         const page = context.getNodeParameter('page', index, 1) as number;
         const page_size = context.getNodeParameter('page_size', index, 100) as number;
 
         const params = new URLSearchParams();
 
-        tipos.forEach((tipo) => {
+        tiposNumber.forEach((tipo) => {
             params.append('tipos', String(tipo));
         });
         if (page) {
@@ -37,17 +31,12 @@ export async function listLotes(
         );
 
     } catch (error: any) {
-        let mensagemErro = error.message || error.mensagem || error.detail || "Ocorreu um erro desconhecido";
-        try {
-            if (error.response && error.response.data) {
-                mensagemErro = JSON.stringify(error.response.data);
-            }
-        } catch {
-        }
-
-        throw new Error(JSON.stringify({
-            nome: error.nome || error.code || 'erro_desconhecido',
-            mensagem: mensagemErro
-        }));
+        throw new NodeOperationError(
+            context.getNode(),
+            `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}`,
+            {
+                description: JSON.stringify(error, null, 4),
+            },
+        );
     }
 }

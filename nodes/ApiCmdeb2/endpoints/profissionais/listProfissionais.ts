@@ -1,4 +1,4 @@
-import {IExecuteFunctions} from 'n8n-workflow';
+import {IExecuteFunctions, NodeOperationError} from 'n8n-workflow';
 
 export async function listProfissionais(
     context: IExecuteFunctions,
@@ -12,6 +12,7 @@ export async function listProfissionais(
         const profissional_nome = context.getNodeParameter('profissional_nome', index, '') as string;
         const co_ocupacao_funcao = context.getNodeParameter('co_ocupacao_funcao', index, null) as number | null;
         const co_situacao_profissional_educacao_funcao = context.getNodeParameter('co_situacao_profissional_educacao_funcao', index, null) as number | null;
+        const include_endereco = context.getNodeParameter('include_endereco', index, false) as boolean;
 
         const page = context.getNodeParameter('page', index, 1) as number;
         const page_size = context.getNodeParameter('page_size', index, 100) as number;
@@ -39,6 +40,9 @@ export async function listProfissionais(
         if (co_situacao_profissional_educacao_funcao) {
             params.append('co_situacao_profissional_educacao_funcao', String(co_situacao_profissional_educacao_funcao));
         }
+        if (include_endereco) {
+            params.append('include_endereco', String(include_endereco));
+        }
         if (page) {
             params.append('page', String(page));
         }
@@ -56,16 +60,12 @@ export async function listProfissionais(
         );
 
     } catch (error: any) {
-        let mensagemErro = error.message || error.mensagem || error.detail || "Ocorreu um erro desconhecido";
-        try {
-            if (error.response && error.response.data) {
-                mensagemErro = JSON.stringify(error.response.data);
-            }
-        } catch {
-        }
-        throw new Error(JSON.stringify({
-            nome: error.nome || error.code || 'erro_desconhecido',
-            mensagem: mensagemErro
-        }));
+        throw new NodeOperationError(
+            context.getNode(),
+            `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}`,
+            {
+                description: JSON.stringify(error, null, 4),
+            },
+        );
     }
 }

@@ -1,34 +1,33 @@
 import {IExecuteFunctions, NodeOperationError} from 'n8n-workflow';
 
-export async function createTurmasLote(
+export async function createFrequenciaMatriculasInativasLote(
     context: IExecuteFunctions,
     index: number,
 ): Promise<any> {
     try {
-        const turmasJson = context.getNodeParameter('turmas_cadastro_json', index);
+        const frequenciasJson = context.getNodeParameter('frequencias_matriculas_inativas_json', index);
 
-        let turmas: any[];
+        let frequencias: any[];
 
         try {
-            turmas = typeof turmasJson === 'string' ? JSON.parse(turmasJson) : turmasJson;
+            frequencias = typeof frequenciasJson === 'string' ? JSON.parse(frequenciasJson) : frequenciasJson;
         } catch (e) {
-            throw new Error('O campo de turmas para cadastro deve conter um array JSON válido.');
+            throw new Error('O campo de frequências para cadastro deve conter um JSON válido.');
         }
 
         const body = {
-            turmas,
+            frequencias,
         };
 
         return await context.helpers.httpRequestWithAuthentication.call(
             context,
             'ApiCmdeb2',
             {
-                url: '/api/v2/turmas/lote',
+                url: `/api/v2/frequencia-mensal-matricula/matriculas-inativas-com-frequencias/lote`,
                 body,
                 method: 'POST',
             }
         );
-
     } catch (error: any) {
         throw new NodeOperationError(
             context.getNode(),

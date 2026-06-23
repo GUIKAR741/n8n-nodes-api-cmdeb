@@ -3,6 +3,7 @@ import {confirmarConclusaoMatriculasLote} from '../endpoints/matriculas/confirma
 import {editMatriculasLote} from '../endpoints/matriculas/editMatriculasLote';
 import {enturmarEstudantesLote} from '../endpoints/matriculas/enturmarEstudantesLote';
 import {movimentarMatriculasLote} from '../endpoints/matriculas/movimentarMatriculasLote';
+import {editEnturmacaoMatriculasLote} from "../endpoints/matriculas/editEnturmacaoMatriculasLote";
 
 export async function matriculasService(
     this: IExecuteFunctions,
@@ -19,6 +20,9 @@ export async function matriculasService(
             break;
         case 'enturmarEstudantesLote':
             requestOptions = await enturmarEstudantesLote(this, i);
+            break;
+        case 'editEnturmacaoMatriculasLote':
+            requestOptions = await editEnturmacaoMatriculasLote(this, i);
             break;
         case 'movimentarMatriculasLote':
             requestOptions = await movimentarMatriculasLote(this, i);
