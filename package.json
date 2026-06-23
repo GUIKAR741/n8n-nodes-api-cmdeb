@@ -1,7 +1,7 @@
 {
   "name": "n8n-nodes-api-cmdeb",
   "displayName": "API CMDEB 2.0 - SEDUC - CE",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GUIKAR741/n8n-nodes-api-cmdeb.git"
