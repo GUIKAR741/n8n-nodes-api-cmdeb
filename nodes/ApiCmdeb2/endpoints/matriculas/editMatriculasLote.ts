@@ -4,17 +4,28 @@ export async function editMatriculasLote(
     context: IExecuteFunctions,
     index: number,
 ): Promise<any> {
+    const matriculasJson = context.getNodeParameter('matriculas_edicao_json', index);
+
+    let matriculas: any[];
+
     try {
-        const matriculasJson = context.getNodeParameter('matriculas_edicao_json', index);
+        matriculas = typeof matriculasJson === 'string' ? JSON.parse(matriculasJson) : matriculasJson;
+    } catch (e) {
+        throw new NodeOperationError(
+            context.getNode(),
+            'O campo "Matrículas (JSON)" para cadastro deve conter um array JSON válido.',
+            {itemIndex: index},
+        );
+    }
 
-        let matriculas: any[];
-
-        try {
-            matriculas = typeof matriculasJson === 'string' ? JSON.parse(matriculasJson) : matriculasJson;
-        } catch (e) {
-            throw new Error('O campo de matrículas para edição deve conter um array JSON válido.');
-        }
-
+    if (matriculas.length === 0) {
+        throw new NodeOperationError(
+            context.getNode(),
+            'O campo "Matrículas (JSON)" deve ter pelo menos um registro.',
+            {itemIndex: index},
+        );
+    }
+    try {
         const body = {
             matriculas,
         };
@@ -30,11 +41,19 @@ export async function editMatriculasLote(
         );
 
     } catch (error: any) {
+        let mensagemErro = error.message || error.mensagem || error.detail || "Ocorreu um erro desconhecido";
+        try {
+            if (error.response && error.response.data) {
+                mensagemErro = JSON.stringify(error.response.data);
+            }
+        } catch {
+        }
         throw new NodeOperationError(
             context.getNode(),
-            `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}`,
+            error.httpCode ? `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}` : 'Erro no Node',
             {
-                description: JSON.stringify(error, null, 4),
+                description: error.httpCode ? JSON.stringify(error, null, 4) : mensagemErro,
+                itemIndex: index,
             },
         );
     }

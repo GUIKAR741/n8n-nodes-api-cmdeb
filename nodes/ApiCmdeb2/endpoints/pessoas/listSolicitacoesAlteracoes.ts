@@ -26,7 +26,7 @@ export async function listSolicitacoesAlteracoes(
         if (id_sgp_pessoa) {
             params.append('id_sgp_pessoa', String(id_sgp_pessoa));
         }
-        if (st_situacao_cpf) {
+        if (st_situacao_cpf && st_situacao_cpf !== '') {
             params.append('st_situacao_cpf', String(st_situacao_cpf));
         }
         if (fl_no_pessoa_validado) {
@@ -64,11 +64,19 @@ export async function listSolicitacoesAlteracoes(
         );
 
     } catch (error: any) {
+        let mensagemErro = error.message || error.mensagem || error.detail || "Ocorreu um erro desconhecido";
+        try {
+            if (error.response && error.response.data) {
+                mensagemErro = JSON.stringify(error.response.data);
+            }
+        } catch {
+        }
         throw new NodeOperationError(
             context.getNode(),
-            `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}`,
+            error.httpCode ? `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}` : 'Erro no Node',
             {
-                description: JSON.stringify(error, null, 4),
+                description: error.httpCode ? JSON.stringify(error, null, 4) : mensagemErro,
+                itemIndex: index,
             },
         );
     }

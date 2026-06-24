@@ -4,18 +4,30 @@ export async function editComponentesCurricularesLote(
     context: IExecuteFunctions,
     index: number,
 ): Promise<any> {
+    // Ajuste 'componentes_edicao_json' se o nome no seu componentesCurricularesConfig.ts for diferente
+    const disciplinasJson = context.getNodeParameter('componentes_edicao_json', index);
+
+    let disciplinas: any[];
+
     try {
-        // Ajuste 'componentes_edicao_json' se o nome no seu componentesCurricularesConfig.ts for diferente
-        const disciplinasJson = context.getNodeParameter('componentes_edicao_json', index);
+        disciplinas = typeof disciplinasJson === 'string' ? JSON.parse(disciplinasJson) : disciplinasJson;
+    } catch (e) {
+        throw new NodeOperationError(
+            context.getNode(),
+            'O campo "Disciplinas (JSON)" para cadastro deve conter um array JSON válido.',
+            {itemIndex: index},
+        );
+    }
 
-        let disciplinas: any[];
+    if (disciplinas.length === 0) {
+        throw new NodeOperationError(
+            context.getNode(),
+            'O campo "Disciplinas (JSON)" deve ter pelo menos um registro.',
+            {itemIndex: index},
+        );
+    }
 
-        try {
-            disciplinas = typeof disciplinasJson === 'string' ? JSON.parse(disciplinasJson) : disciplinasJson;
-        } catch (e) {
-            throw new Error('O campo de componentes curriculares para edição deve conter um array JSON válido.');
-        }
-
+    try {
         const body = {
             disciplinas,
         };
@@ -31,11 +43,19 @@ export async function editComponentesCurricularesLote(
         );
 
     } catch (error: any) {
+        let mensagemErro = error.message || error.mensagem || error.detail || "Ocorreu um erro desconhecido";
+        try {
+            if (error.response && error.response.data) {
+                mensagemErro = JSON.stringify(error.response.data);
+            }
+        } catch {
+        }
         throw new NodeOperationError(
             context.getNode(),
-            `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}`,
+            error.httpCode ? `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}` : 'Erro no Node',
             {
-                description: JSON.stringify(error, null, 4),
+                description: error.httpCode ? JSON.stringify(error, null, 4) : mensagemErro,
+                itemIndex: index,
             },
         );
     }

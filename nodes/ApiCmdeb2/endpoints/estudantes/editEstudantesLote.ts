@@ -4,19 +4,31 @@ export async function editEstudantesLote(
     context: IExecuteFunctions,
     index: number,
 ): Promise<any> {
+    // Obtém o parâmetro JSON informado pelo usuário no nó do n8n
+    const estudantesJson = context.getNodeParameter('estudantes_edicao_json', index);
+
+    let estudantes: any[];
+
+    // Garante que o valor será um Array/Objeto JSON válido antes de montar o payload
     try {
-        // Obtém o parâmetro JSON informado pelo usuário no nó do n8n
-        const estudantesJson = context.getNodeParameter('estudantes_edicao_json', index);
+        estudantes = typeof estudantesJson === 'string' ? JSON.parse(estudantesJson) : estudantesJson;
+    } catch (e) {
+        throw new NodeOperationError(
+            context.getNode(),
+            'O campo "Estudantes (JSON)" para cadastro deve conter um array JSON válido.',
+            {itemIndex: index},
+        );
+    }
 
-        let estudantes: any[];
+    if (estudantes.length === 0) {
+        throw new NodeOperationError(
+            context.getNode(),
+            'O campo "Estudantes (JSON)" deve ter pelo menos um registro.',
+            {itemIndex: index},
+        );
+    }
 
-        // Garante que o valor será um Array/Objeto JSON válido antes de montar o payload
-        try {
-            estudantes = typeof estudantesJson === 'string' ? JSON.parse(estudantesJson) : estudantesJson;
-        } catch (e) {
-            throw new Error('O campo de estudantes para edição deve conter um JSON válido.');
-        }
-
+    try {
         // Monta o corpo da requisição conforme a estrutura exigida pela API CMDEB (EstudantesEdicaoLoteRequest)
         const body = {
             estudantes,
@@ -33,11 +45,19 @@ export async function editEstudantesLote(
             });
 
     } catch (error: any) {
+        let mensagemErro = error.message || error.mensagem || error.detail || "Ocorreu um erro desconhecido";
+        try {
+            if (error.response && error.response.data) {
+                mensagemErro = JSON.stringify(error.response.data);
+            }
+        } catch {
+        }
         throw new NodeOperationError(
             context.getNode(),
-            `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}`,
+            error.httpCode ? `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}` : 'Erro no Node',
             {
-                description: JSON.stringify(error, null, 4),
+                description: error.httpCode ? JSON.stringify(error, null, 4) : mensagemErro,
+                itemIndex: index,
             },
         );
     }

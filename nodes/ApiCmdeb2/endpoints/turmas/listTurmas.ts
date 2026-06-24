@@ -9,8 +9,8 @@ export async function listTurmas(
         const id_sgp_componente_curricular = context.getNodeParameter('id_sgp_componente_curricular', index, null) as number | null;
         const co_entidade = context.getNodeParameter('co_entidade', index, '') as string;
         const no_turma = context.getNodeParameter('no_turma', index, '') as string;
-        const co_etapa_ensino = context.getNodeParameter('co_etapa_ensino', index, null) as number | null;
-        const co_turno_turma = context.getNodeParameter('co_turno_turma', index, null) as number | null;
+        const co_etapa_ensino = context.getNodeParameter('co_etapa_ensino', index, '') as number | string;
+        const co_turno_turma = context.getNodeParameter('co_turno_turma', index, '') as number | string;
         const nu_ano = context.getNodeParameter('nu_ano', index, null) as number | null;
         const st_turma_ativa = context.getNodeParameter('st_turma_ativa', index, null) as boolean | null;
 
@@ -31,10 +31,10 @@ export async function listTurmas(
         if (no_turma) {
             params.append('no_turma', String(no_turma));
         }
-        if (co_etapa_ensino) {
+        if (co_etapa_ensino && co_etapa_ensino !== '') {
             params.append('co_etapa_ensino', String(co_etapa_ensino));
         }
-        if (co_turno_turma) {
+        if (co_turno_turma && co_turno_turma !== '') {
             params.append('co_turno_turma', String(co_turno_turma));
         }
         if (nu_ano) {
@@ -60,11 +60,19 @@ export async function listTurmas(
         );
 
     } catch (error: any) {
+        let mensagemErro = error.message || error.mensagem || error.detail || "Ocorreu um erro desconhecido";
+        try {
+            if (error.response && error.response.data) {
+                mensagemErro = JSON.stringify(error.response.data);
+            }
+        } catch {
+        }
         throw new NodeOperationError(
             context.getNode(),
-            `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}`,
+            error.httpCode ? `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}` : 'Erro no Node',
             {
-                description: JSON.stringify(error, null, 4),
+                description: error.httpCode ? JSON.stringify(error, null, 4) : mensagemErro,
+                itemIndex: index,
             },
         );
     }

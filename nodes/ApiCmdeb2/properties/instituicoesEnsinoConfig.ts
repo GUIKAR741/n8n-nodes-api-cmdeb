@@ -2,19 +2,15 @@ import type {INodeProperties} from 'n8n-workflow';
 
 export const instituicoesEnsinoConfig: INodeProperties[] = [
 
-    // ─── listInstituicoesEnsino (Parâmetros de Busca) ─────────────────────────
+    // ─── listInstituicoesEnsino ───────────────────────────────────────────────
     {
         displayName: 'ID SGP da Instituição',
         name: 'id_sgp_entidade',
         type: 'number',
         default: null,
         required: false,
-        description: 'ID SGP interno da instituição de ensino',
-        displayOptions: {
-            show: {
-                endpoints: ['listInstituicoesEnsino']
-            }
-        },
+        description: 'ID SGP  - (ensino)interno da instituição de ensino',
+        displayOptions: {show: {endpoints: ['listInstituicoesEnsino']}},
     },
     {
         displayName: 'Código INEP da Instituição',
@@ -23,40 +19,75 @@ export const instituicoesEnsinoConfig: INodeProperties[] = [
         default: '',
         required: false,
         description: 'Código INEP da instituição de ensino (8 dígitos)',
-        displayOptions: {
-            show: {
-                endpoints: ['listInstituicoesEnsino']
-            }
-        },
+        displayOptions: {show: {endpoints: ['listInstituicoesEnsino']}},
     },
     {
         displayName: 'Nome da Instituição',
-        name: 'no_entidade',
+        name: 'no_instituicao',
         type: 'string',
         default: '',
         required: false,
         description: 'Busca parcial case-insensitive pelo nome da instituição de ensino',
-        displayOptions: {
-            show: {
-                endpoints: ['listInstituicoesEnsino']
-            }
-        },
+        displayOptions: {show: {endpoints: ['listInstituicoesEnsino']}},
     },
     {
-        displayName: 'UF',
+        displayName: 'Código IBGE do Município',
+        name: 'co_municipio',
+        type: 'number',
+        default: null,
+        required: false,
+        description: 'Código IBGE do município da instituição de ensino',
+        displayOptions: {show: {endpoints: ['listInstituicoesEnsino']}},
+    },
+    {
+        displayName: 'Código IBGE da UF',
         name: 'co_uf',
-        type: 'string',
+        type: 'number',
+        default: null,
+        required: false,
+        description: 'Código IBGE da Unidade Federativa da instituição de ensino',
+        displayOptions: {show: {endpoints: ['listInstituicoesEnsino']}},
+    },
+    {
+        displayName: 'Dependência Administrativa',
+        name: 'co_dependencia_administrativa',
+        type: 'options',
         default: '',
         required: false,
-        description: 'Código ou sigla da Unidade Federativa da instituição',
-        displayOptions: {
-            show: {
-                endpoints: ['listInstituicoesEnsino']
-            }
-        },
+        description: 'Dependência administrativa da instituição de ensino',
+        options: [
+            {name: 'Todas', value: ''},
+            {name: 'Federal - (1)', value: 1},
+            {name: 'Estadual - (2)', value: 2},
+            {name: 'Municipal - (3)', value: 3},
+            {name: 'Privada - (4)', value: 4},
+        ],
+        displayOptions: {show: {endpoints: ['listInstituicoesEnsino']}},
     },
-
-    // ─── Paginação (listInstituicoesEnsino) ───────────────────────────────────
+    {
+        displayName: 'Situação de Funcionamento',
+        name: 'co_situacao_funcionamento',
+        type: 'options',
+        default: '',
+        required: false,
+        description: 'Situação de funcionamento da instituição de ensino',
+        options: [
+            {name: 'Todas', value: ''},
+            {name: 'Em Funcionamento - (1)', value: 1},
+            {name: 'Paralisada - (2)', value: 2},
+            {name: 'Inativada - (3)', value: 3},
+        ],
+        displayOptions: {show: {endpoints: ['listInstituicoesEnsino']}},
+    },
+    {
+        displayName: 'Incluir Endereço',
+        name: 'include_endereco',
+        type: 'boolean',
+        default: false,
+        required: false,
+        description: 'Whether inclui dados de endereço (logradouro, CEP, coordenadas, localização)',
+        displayOptions: {show: {endpoints: ['listInstituicoesEnsino']}},
+    },
     {
         displayName: 'Página',
         name: 'page',
@@ -65,11 +96,7 @@ export const instituicoesEnsinoConfig: INodeProperties[] = [
         required: false,
         description: 'Número da página',
         typeOptions: {minValue: 1},
-        displayOptions: {
-            show: {
-                endpoints: ['listInstituicoesEnsino']
-            }
-        },
+        displayOptions: {show: {endpoints: ['listInstituicoesEnsino']}},
     },
     {
         displayName: 'Itens por Página',
@@ -79,38 +106,30 @@ export const instituicoesEnsinoConfig: INodeProperties[] = [
         required: false,
         description: 'Itens por página (padrão: 100, máximo: 5000)',
         typeOptions: {minValue: 1, maxValue: 5000},
-        displayOptions: {
-            show: {
-                endpoints: ['listInstituicoesEnsino']
-            }
-        },
+        displayOptions: {show: {endpoints: ['listInstituicoesEnsino']}},
     },
 
-    // ─── Operações em Lote (Body Params) ──────────────────────────────────────
+    // ─── createInstituicoesEnsinoLote ─────────────────────────────────────────
     {
         displayName: 'Instituições para Cadastro (JSON)',
         name: 'instituicoes_cadastro_json',
         type: 'json',
         default: '[]',
         required: true,
-        description: 'Array de objetos contendo os dados das instituições de ensino para cadastro.',
-        displayOptions: {
-            show: {
-                endpoints: ['createInstituicoesEnsinoLote']
-            }
-        },
+        hint: 'Obrigatório. Campos obrigatórios por item: co_entidade, no_entidade, dep_administrativa_instituicao, situacao_funcionamento_instituicao, cnpj_secretaria_educacao, instituicao_telefone, instituicao_e_mail, co_uf_res_entidade, co_municipio_entidade, instituicao_ds_logradouro_res, instituicao_nu_endereco_res, instituicao_bairro_res, cep_instituicao, instituicao_localizacao_geografica, instituicao_localizacao_diferenciada, instituicao_etapa_de_ensino',
+        description: 'Array de objetos contendo os dados das instituições de ensino para cadastro',
+        displayOptions: {show: {endpoints: ['createInstituicoesEnsinoLote']}},
     },
+
+    // ─── editInstituicoesEnsinoLote ───────────────────────────────────────────
     {
         displayName: 'Instituições para Edição (JSON)',
         name: 'instituicoes_edicao_json',
         type: 'json',
         default: '[]',
         required: true,
-        description: 'Array de objetos contendo os dados das instituições de ensino para edição. Cada item deve conter editar_instituicao_ensino: 1.',
-        displayOptions: {
-            show: {
-                endpoints: ['editInstituicoesEnsinoLote']
-            }
-        },
+        hint: 'Obrigatório. Cada item deve conter editar_dados=1 e id_sgp_entidade além dos demais campos obrigatórios',
+        description: 'Array de objetos contendo os dados das instituições de ensino para edição',
+        displayOptions: {show: {endpoints: ['editInstituicoesEnsinoLote']}},
     },
 ];

@@ -4,14 +4,20 @@ export async function getLoteStatus(
     context: IExecuteFunctions,
     index: number,
 ): Promise<any> {
+    // Parâmetro de rota obrigatório
+    const lote_id = context.getNodeParameter('lote_id', index) as string;
+
+    // Parâmetros de query (opcionais)
+    const objetos_processados = context.getNodeParameter('objetos_processados', index, false) as boolean;
+    const limit_objetos = context.getNodeParameter('limit_objetos', index, 100) as number;
+    if (!lote_id) {
+        throw new NodeOperationError(
+            context.getNode(),
+            'O campo "ID do Lote" é obrigatório.',
+            {itemIndex: index},
+        );
+    }
     try {
-        // Parâmetro de rota obrigatório
-        const lote_id = context.getNodeParameter('lote_id', index) as string;
-
-        // Parâmetros de query (opcionais)
-        const objetos_processados = context.getNodeParameter('objetos_processados', index, false) as boolean;
-        const limit_objetos = context.getNodeParameter('limit_objetos', index, 100) as number;
-
         const params = new URLSearchParams();
 
         if (objetos_processados) {
@@ -32,11 +38,19 @@ export async function getLoteStatus(
         );
 
     } catch (error: any) {
+        let mensagemErro = error.message || error.mensagem || error.detail || "Ocorreu um erro desconhecido";
+        try {
+            if (error.response && error.response.data) {
+                mensagemErro = JSON.stringify(error.response.data);
+            }
+        } catch {
+        }
         throw new NodeOperationError(
             context.getNode(),
-            `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}`,
+            error.httpCode ? `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}` : 'Erro no Node',
             {
-                description: JSON.stringify(error, null, 4),
+                description: error.httpCode ? JSON.stringify(error, null, 4) : mensagemErro,
+                itemIndex: index,
             },
         );
     }

@@ -4,17 +4,29 @@ export async function createAvaliacaoDesempenhoLote(
     context: IExecuteFunctions,
     index: number,
 ): Promise<any> {
+    const avaliacoesJson = context.getNodeParameter('avaliacoes_cadastro_json', index);
+
+    let avaliacoes: any[];
+
     try {
-        const avaliacoesJson = context.getNodeParameter('avaliacoes_cadastro_json', index);
+        avaliacoes = typeof avaliacoesJson === 'string' ? JSON.parse(avaliacoesJson) : avaliacoesJson;
+    } catch (e) {
+        throw new NodeOperationError(
+            context.getNode(),
+            'O campo "Avaliações (JSON)" para cadastro deve conter um array JSON válido.',
+            {itemIndex: index},
+        );
+    }
 
-        let avaliacoes: any[];
+    if (avaliacoes.length === 0) {
+        throw new NodeOperationError(
+            context.getNode(),
+            'O campo "Avaliações (JSON)" deve ter pelo menos um registro.',
+            {itemIndex: index},
+        );
+    }
 
-        try {
-            avaliacoes = typeof avaliacoesJson === 'string' ? JSON.parse(avaliacoesJson) : avaliacoesJson;
-        } catch (e) {
-            throw new Error('O campo de avaliações para cadastro deve conter um array JSON válido.');
-        }
-
+    try {
         const body = {
             avaliacoes,
         };
@@ -30,11 +42,19 @@ export async function createAvaliacaoDesempenhoLote(
         );
 
     } catch (error: any) {
+        let mensagemErro = error.message || error.mensagem || error.detail || "Ocorreu um erro desconhecido";
+        try {
+            if (error.response && error.response.data) {
+                mensagemErro = JSON.stringify(error.response.data);
+            }
+        } catch {
+        }
         throw new NodeOperationError(
             context.getNode(),
-            `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}`,
+            error.httpCode ? `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}` : 'Erro no Node',
             {
-                description: JSON.stringify(error, null, 4),
+                description: error.httpCode ? JSON.stringify(error, null, 4) : mensagemErro,
+                itemIndex: index,
             },
         );
     }

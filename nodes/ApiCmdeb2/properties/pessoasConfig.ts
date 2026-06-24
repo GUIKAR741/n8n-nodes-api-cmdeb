@@ -27,14 +27,15 @@ export const pessoasConfig: INodeProperties[] = [
         required: false,
         description: 'Situação do CPF na Receita Federal',
         options: [
-            {name: 'Regular', value: 0},
-            {name: 'Suspensa', value: 2},
-            {name: 'Titular Falecido', value: 3},
-            {name: 'Pendente de Regularização', value: 4},
-            {name: 'Cancelada por Multiplicidade', value: 5},
-            {name: 'Nula', value: 8},
-            {name: 'Cancelada de Ofício / Cancelada', value: 9},
-            {name: 'Inexistente', value: 10},
+            {name: 'Todos', value: ''},
+            {name: 'Regular - (0)', value: 0},
+            {name: 'Suspensa - (2)', value: 2},
+            {name: 'Titular Falecido - (3)', value: 3},
+            {name: 'Pendente de Regularização - (4)', value: 4},
+            {name: 'Cancelada por Multiplicidade - (5)', value: 5},
+            {name: 'Nula - (8)', value: 8},
+            {name: 'Cancelada de Ofício / Cancelada - (9)', value: 9},
+            {name: 'Inexistente - (10)', value: 10},
         ],
         displayOptions: {
             show: {
@@ -144,10 +145,11 @@ export const pessoasConfig: INodeProperties[] = [
         required: false,
         description: 'Situação geral da validação cadastral da pessoa',
         options: [
-            {name: 'Em Validação', value: 1},
-            {name: 'Autenticada', value: 2},
-            {name: 'Não Autenticado', value: 3},
-            {name: 'Inexistente', value: 4},
+            {name: 'Todos', value: ''},
+            {name: 'Em Validação - (1)', value: 1},
+            {name: 'Autenticada - (2)', value: 2},
+            {name: 'Não Autenticado - (3)', value: 3},
+            {name: 'Inexistente - (4)', value: 4},
         ],
         displayOptions: {
             show: {

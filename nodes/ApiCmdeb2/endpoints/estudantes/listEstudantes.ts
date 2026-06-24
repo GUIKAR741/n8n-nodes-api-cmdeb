@@ -20,16 +20,9 @@ export async function listEstudantes(
         const page = context.getNodeParameter('page', index, 1) as number;
         const page_size = context.getNodeParameter('page_size', index, 100) as number;
 
-        // Extração e tratamento seguro para arrays separados por vírgula
-        const situacoesStr = context.getNodeParameter('situacoes_matricula', index, '') as string;
-        const situacoes_matricula = situacoesStr
-            ? situacoesStr.split(',').map(s => s.trim()).filter(Boolean).map(Number)
-            : [];
+        const situacoes_matricula = context.getNodeParameter('situacoes_matricula', index, []) as number[];
 
-        const etapasStr = context.getNodeParameter('etapas_ensino', index, '') as string;
-        const etapas_ensino = etapasStr
-            ? etapasStr.split(',').map(s => s.trim()).filter(Boolean).map(Number)
-            : [];
+        const etapas_ensino = context.getNodeParameter('etapas_ensino', index, []) as number[];
 
         const params = new URLSearchParams();
 
@@ -81,11 +74,19 @@ export async function listEstudantes(
         );
 
     } catch (error: any) {
+        let mensagemErro = error.message || error.mensagem || error.detail || "Ocorreu um erro desconhecido";
+        try {
+            if (error.response && error.response.data) {
+                mensagemErro = JSON.stringify(error.response.data);
+            }
+        } catch {
+        }
         throw new NodeOperationError(
             context.getNode(),
-            `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}`,
+            error.httpCode ? `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}` : 'Erro no Node',
             {
-                description: JSON.stringify(error, null, 4),
+                description: error.httpCode ? JSON.stringify(error, null, 4) : mensagemErro,
+                itemIndex: index,
             },
         );
     }

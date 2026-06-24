@@ -52,7 +52,7 @@ export const lotesConfig: INodeProperties[] = [
         displayName: 'Offset Objetos Processados',
         name: 'offset_objetos',
         type: 'number',
-        default: '',
+        default: null,
         required: false,
         description: 'Offset para paginação dos objetos processados',
         typeOptions: {minValue: 0},

@@ -4,22 +4,25 @@ export async function listFrequenciaMensal(
     context: IExecuteFunctions,
     index: number,
 ): Promise<any> {
+    const id_sgp_entidade = context.getNodeParameter('id_sgp_entidade', index, null) as number | null;
+    const id_sgp_matricula = context.getNodeParameter('id_sgp_matricula', index, null) as number | null;
+    const co_entidade = context.getNodeParameter('co_entidade', index, '') as string;
+    const estudante_cpf = context.getNodeParameter('estudante_cpf', index, '') as string;
+    const ano_referencia = context.getNodeParameter('ano_referencia_query', index, null) as number | null;
+    const mes_referencia = context.getNodeParameter('mes_referencia_query', index, null) as number | null;
+
+    const page = context.getNodeParameter('page', index, 1) as number;
+    const page_size = context.getNodeParameter('page_size', index, 100) as number;
+
+    if ((mes_referencia && !ano_referencia)) {
+        throw new NodeOperationError(
+            context.getNode(),
+            'O campo "Ano de Referência" é obrigatório quando "Mês de Referência" é preenchido.',
+            {itemIndex: index},
+        );
+    }
+
     try {
-        const id_sgp_entidade = context.getNodeParameter('id_sgp_entidade', index, null) as number | null;
-        const id_sgp_matricula = context.getNodeParameter('id_sgp_matricula', index, null) as number | null;
-        const co_entidade = context.getNodeParameter('co_entidade', index, '') as string;
-        const estudante_cpf = context.getNodeParameter('estudante_cpf', index, '') as string;
-        const ano_referencia = context.getNodeParameter('ano_referencia_query', index, null) as number | null;
-        const mes_referencia = context.getNodeParameter('mes_referencia_query', index, null) as number | null;
-
-        const page = context.getNodeParameter('page', index, 1) as number;
-        const page_size = context.getNodeParameter('page_size', index, 100) as number;
-
-        if ((mes_referencia && !ano_referencia) || (!mes_referencia && ano_referencia)) {
-            throw new Error('Se campo mês preenchido então ano deve ser preenchido, se ano preenchido então mês deve ser preenchido.');
-        }
-
-
         const params = new URLSearchParams();
 
         if (id_sgp_entidade) {
@@ -57,11 +60,19 @@ export async function listFrequenciaMensal(
             }
         );
     } catch (error: any) {
+        let mensagemErro = error.message || error.mensagem || error.detail || "Ocorreu um erro desconhecido";
+        try {
+            if (error.response && error.response.data) {
+                mensagemErro = JSON.stringify(error.response.data);
+            }
+        } catch {
+        }
         throw new NodeOperationError(
             context.getNode(),
-            `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}`,
+            error.httpCode ? `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}` : 'Erro no Node',
             {
-                description: JSON.stringify(error, null, 4),
+                description: error.httpCode ? JSON.stringify(error, null, 4) : mensagemErro,
+                itemIndex: index,
             },
         );
     }

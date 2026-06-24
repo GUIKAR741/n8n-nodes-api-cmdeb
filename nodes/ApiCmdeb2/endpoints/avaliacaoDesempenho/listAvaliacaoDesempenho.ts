@@ -9,9 +9,9 @@ export async function listAvaliacaoDesempenho(
         const id_sgp_matricula = context.getNodeParameter('id_sgp_matricula', index, null) as number | null;
         const id_sgp_componente_curricular = context.getNodeParameter('id_sgp_componente_curricular', index, null) as number | null;
         const id_sgp_turma = context.getNodeParameter('id_sgp_turma', index, null) as number | null;
-        const co_area_conhecimento = context.getNodeParameter('co_area_conhecimento', index, null) as number | null;
+        const co_area_conhecimento = context.getNodeParameter('co_area_conhecimento', index, '') as number | string;
         const nu_ano_matricula = context.getNodeParameter('nu_ano_matricula', index, null) as number | null;
-        const co_etapa_ensino = context.getNodeParameter('co_etapa_ensino', index, null) as number | null;
+        const co_etapa_ensino = context.getNodeParameter('co_etapa_ensino', index, '') as number | string;
 
         const page = context.getNodeParameter('page', index, 1) as number;
         const page_size = context.getNodeParameter('page_size', index, 100) as number;
@@ -27,13 +27,13 @@ export async function listAvaliacaoDesempenho(
         if (id_sgp_turma) {
             params.append('id_sgp_turma', String(id_sgp_turma));
         }
-        if (co_area_conhecimento) {
+        if (co_area_conhecimento && co_area_conhecimento !== '') {
             params.append('co_area_conhecimento', String(co_area_conhecimento));
         }
         if (nu_ano_matricula) {
             params.append('nu_ano_matricula', String(nu_ano_matricula));
         }
-        if (co_etapa_ensino) {
+        if (co_etapa_ensino && co_etapa_ensino !== '') {
             params.append('co_etapa_ensino', String(co_etapa_ensino));
         }
         if (page) {
@@ -53,11 +53,19 @@ export async function listAvaliacaoDesempenho(
         );
 
     } catch (error: any) {
+        let mensagemErro = error.message || error.mensagem || error.detail || "Ocorreu um erro desconhecido";
+        try {
+            if (error.response && error.response.data) {
+                mensagemErro = JSON.stringify(error.response.data);
+            }
+        } catch {
+        }
         throw new NodeOperationError(
             context.getNode(),
-            `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}`,
+            error.httpCode ? `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}` : 'Erro no Node',
             {
-                description: JSON.stringify(error, null, 4),
+                description: error.httpCode ? JSON.stringify(error, null, 4) : mensagemErro,
+                itemIndex: index,
             },
         );
     }

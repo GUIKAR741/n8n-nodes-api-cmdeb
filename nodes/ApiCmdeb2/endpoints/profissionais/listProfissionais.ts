@@ -10,8 +10,8 @@ export async function listProfissionais(
         const profissional_cpf = context.getNodeParameter('profissional_cpf', index, '') as string;
         const co_entidade = context.getNodeParameter('co_entidade', index, '') as string;
         const profissional_nome = context.getNodeParameter('profissional_nome', index, '') as string;
-        const co_ocupacao_funcao = context.getNodeParameter('co_ocupacao_funcao', index, null) as number | null;
-        const co_situacao_profissional_educacao_funcao = context.getNodeParameter('co_situacao_profissional_educacao_funcao', index, null) as number | null;
+        const co_ocupacao_funcao = context.getNodeParameter('co_ocupacao_funcao', index) as number | string;
+        const co_situacao_profissional_educacao_funcao = context.getNodeParameter('co_situacao_profissional_educacao_funcao', index) as number | string;
         const include_endereco = context.getNodeParameter('include_endereco', index, false) as boolean;
 
         const page = context.getNodeParameter('page', index, 1) as number;
@@ -34,10 +34,10 @@ export async function listProfissionais(
         if (profissional_nome) {
             params.append('profissional_nome', String(profissional_nome));
         }
-        if (co_ocupacao_funcao) {
+        if (co_ocupacao_funcao && co_ocupacao_funcao !== '') {
             params.append('co_ocupacao_funcao', String(co_ocupacao_funcao));
         }
-        if (co_situacao_profissional_educacao_funcao) {
+        if (co_situacao_profissional_educacao_funcao && co_situacao_profissional_educacao_funcao !== '') {
             params.append('co_situacao_profissional_educacao_funcao', String(co_situacao_profissional_educacao_funcao));
         }
         if (include_endereco) {
@@ -60,11 +60,19 @@ export async function listProfissionais(
         );
 
     } catch (error: any) {
+        let mensagemErro = error.message || error.mensagem || error.detail || "Ocorreu um erro desconhecido";
+        try {
+            if (error.response && error.response.data) {
+                mensagemErro = JSON.stringify(error.response.data);
+            }
+        } catch {
+        }
         throw new NodeOperationError(
             context.getNode(),
-            `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}`,
+            error.httpCode ? `Erro ao consultar API HTTP ${error.httpCode}: ${error.description}` : 'Erro no Node',
             {
-                description: JSON.stringify(error, null, 4),
+                description: error.httpCode ? JSON.stringify(error, null, 4) : mensagemErro,
+                itemIndex: index,
             },
         );
     }
